@@ -1,0 +1,63 @@
+.h3-credit {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 4px;
+  color: #8a8178;
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: .15px;
+  white-space: nowrap;
+}
+
+.h3-credit svg {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+  display: block;
+}
+
+.h3-credit b {
+  color: #5f574f;
+  font-weight: 800;
+  letter-spacing: .35px;
+}
+
+.topbar:has(.h3-credit) {
+  height: 82px;
+}
+
+.brand-copy:has(.h3-credit) {
+  line-height: 1;
+}
+
+.brand-copy:has(.h3-credit) small {
+  margin-top: 4px;
+}
+
+@media (max-width: 380px) {
+  .topbar:has(.h3-credit) {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+  .brand {
+    gap: 8px;
+  }
+  .brand-mark {
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+  }
+  .brand-copy strong {
+    font-size: 18px;
+  }
+  .brand-copy small {
+    font-size: 10px;
+  }
+  .h3-credit {
+    font-size: 8px;
+  }
+  .history-button {
+    padding: 8px 10px;
+  }
+}
