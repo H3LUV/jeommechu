@@ -16,12 +16,28 @@
   <link rel="stylesheet" href="./styles.css?v=0.6.7" />
   <link rel="stylesheet" href="./extras.css?v=0.6.7" />
   <link rel="stylesheet" href="./brand-icon.css?v=0.6.7" />
-  <link rel="stylesheet" href="./h3works-brand.css?v=0.6.8" />
+  <link rel="stylesheet" href="./h3works-brand.css?v=0.6.9" />
   <script type="importmap">
     {"imports":{"./team-final.js?v=3":"./team-ui-v2.js?v=0.6.7"}}
   </script>
 </head>
 <body>
+  <div class="h3-launch-splash" id="h3LaunchSplash" aria-hidden="true">
+    <div class="h3-launch-inner">
+      <div class="h3-launch-mark">
+        <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M5 29.5 66 6 43 66 33.5 39.5 5 29.5Z" fill="#FFB514"/>
+          <path d="M5 29.5 66 6 26.5 35.7 5 29.5Z" fill="#FFD35A"/>
+          <path d="M33.5 39.5 66 6 27 49.5 17 62 31 53.5 33.5 39.5Z" fill="#F59E0B"/>
+          <path d="M33.5 39.5 66 6 39.2 44.2 33.5 39.5Z" fill="#FFF4C2"/>
+        </svg>
+      </div>
+      <div class="h3-launch-name">H3 WORKS</div>
+      <div class="h3-launch-slogan">MAKE. PLAY. EXPLORE.</div>
+      <div class="h3-launch-product"><span>presents</span><strong>점메추</strong></div>
+    </div>
+  </div>
+
   <div class="app-shell">
     <header class="topbar">
       <button class="brand" type="button" data-action="home" aria-label="점메추 홈">
@@ -52,6 +68,18 @@
   </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="modal-root"></div>
+
+  <script>
+    (() => {
+      const splash = document.getElementById('h3LaunchSplash');
+      if (!splash) return;
+      const leave = () => {
+        splash.classList.add('is-leaving');
+        window.setTimeout(() => splash.remove(), 620);
+      };
+      window.setTimeout(leave, 1450);
+    })();
+  </script>
   <script src="./reroll.js?v=0.6.7"></script>
   <script src="./kakao-map.js?v=0.6.7"></script>
   <script src="./ui-copy.js?v=0.6.7"></script>
