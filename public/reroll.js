@@ -5,8 +5,38 @@
   let lastShown = new Set();
   let cleanupScheduled = false;
 
+  const SOLO_BLOCK_TERMS = [
+    '호텔', '백화점', '리조트', '웨딩', '컨벤션', '오마카세', '파인다이닝', '파인 다이닝',
+    'vip', '브이아이피', '프리미엄', '프라이빗 다이닝', 'private dining', '스시카세',
+    '롯데호텔', '롯데백화점', '웨스틴조선', '조선호텔', '신라호텔', '포시즌스', '메리어트',
+    '하얏트', '인터컨티넨탈', '콘래드', '소피텔', '앰배서더', '반얀트리',
+    '신세계백화점', '현대백화점', '더현대', '갤러리아',
+  ];
+
+  const SOLO_SOFT_BLOCK_TERMS = [
+    '참치', '참치회', '참치전문', '참치 전문', '참치코스', '참치 코스', '코스요리', '코스 요리',
+    '스테이크하우스', '라운지', '뷔페', '룸식당', '룸 식당', '접대', '상견례',
+  ];
+
   function itemId(item) {
     return String(item?.id || `${item?.name || ''}:${item?.address || ''}`);
+  }
+
+  function itemText(item) {
+    return `${item?.name || ''} ${item?.categoryRaw || ''} ${item?.address || ''}`.toLowerCase();
+  }
+
+  function hasAnyTerm(text, terms) {
+    return terms.some((term) => text.includes(term.toLowerCase()));
+  }
+
+  function filterPoolForCompanion(items, companion) {
+    if (companion !== '혼밥') return items;
+    const hardSafe = items.filter((item) => !hasAnyTerm(itemText(item), SOLO_BLOCK_TERMS));
+    if (!hardSafe.length) return [];
+
+    const strict = hardSafe.filter((item) => !hasAnyTerm(itemText(item), SOLO_SOFT_BLOCK_TERMS));
+    return strict.length ? strict : hardSafe;
   }
 
   function shuffleByQuality(items) {
@@ -150,9 +180,11 @@
 
     if (!Array.isArray(data.items) || data.items.length <= 1) return response;
 
-    data.items = diversify(data.items, signature);
+    const safePool = filterPoolForCompanion(data.items, requestBody.companion || '');
+    data.items = diversify(safePool, signature);
+    data.poolSize = data.items.length;
     data.reroll = {
-      enabled: true,
+      enabled: data.items.length > 1,
       poolSize: data.items.length,
       searchRadiusM: 1000,
       shownIds: data.items.slice(0, 5).map(itemId),
