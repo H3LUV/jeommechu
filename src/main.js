@@ -45,14 +45,29 @@ function hasAnyTerm(text, terms) {
   return terms.some((term) => text.includes(term.toLowerCase()));
 }
 
+function tagsOf(item) {
+  return Array.isArray(item?.searchTags) ? item.searchTags : [];
+}
+
+function hasTagPrefix(item, prefix) {
+  return tagsOf(item).some((tag) => String(tag).startsWith(prefix));
+}
+
+function soloEvidence(item) {
+  const text = restaurantText(item);
+  if (hasTagPrefix(item, 'menu:')) return 4;
+  if (hasAnyTerm(text, SOLO_CASUAL_TERMS)) return 3;
+  if (hasTagPrefix(item, 'intent:')) return 2;
+  if (tagsOf(item).some((tag) => !String(tag).startsWith('broad:'))) return 1;
+  return 0;
+}
+
 function rankSoloItems(items) {
   return [...items].sort((a, b) => {
-    const aText = restaurantText(a);
-    const bText = restaurantText(b);
-    const aCasual = hasAnyTerm(aText, SOLO_CASUAL_TERMS) ? 1 : 0;
-    const bCasual = hasAnyTerm(bText, SOLO_CASUAL_TERMS) ? 1 : 0;
-    if (aCasual !== bCasual) return bCasual - aCasual;
-    return Number(b?.score || 0) - Number(a?.score || 0) || Number(a?.distance_m || 0) - Number(b?.distance_m || 0);
+    const evidenceGap = soloEvidence(b) - soloEvidence(a);
+    if (evidenceGap) return evidenceGap;
+    return Number(b?.score || 0) - Number(a?.score || 0)
+      || Number(a?.distance_m || 0) - Number(b?.distance_m || 0);
   });
 }
 
@@ -62,13 +77,22 @@ function filterSoloCandidates(items) {
   const withoutHard = items.filter((item) => !hasAnyTerm(restaurantText(item), SOLO_HARD_EXCLUDE_TERMS));
   const strict = withoutHard.filter((item) => !hasAnyTerm(restaurantText(item), SOLO_SOFT_EXCLUDE_TERMS));
 
-  // 일반 지역에서는 고급/접대형 식당을 후보 풀에서 완전히 제거한다.
-  if (strict.length >= 5) return rankSoloItems(strict);
+  // 1순위: 카카오의 혼밥용 메뉴 검색에 직접 걸렸거나, 이름/분류 자체가 명확히 혼밥형인 곳.
+  // 도시 지역에서는 이 그룹만 사용해 호텔/고급식당이 넓은 음식점 검색에서 섞이는 것을 막는다.
+  const strongSolo = strict.filter((item) => hasTagPrefix(item, 'menu:') || hasAnyTerm(restaurantText(item), SOLO_CASUAL_TERMS));
+  if (strongSolo.length >= 3) return rankSoloItems(strongSolo);
 
-  // 선택지가 적은 지역에서는 참치·코스 등 소프트 제외만 단계적으로 완화한다.
-  if (withoutHard.length >= 3) return rankSoloItems(withoutHard);
+  // 2순위: '혼밥/혼밥 맛집/혼밥 식당' 검색에 직접 잡힌 곳까지 허용하되 broad-only 결과는 제외한다.
+  const contextual = strict.filter((item) => hasTagPrefix(item, 'intent:') || hasTagPrefix(item, 'menu:'));
+  if (contextual.length >= 3) return rankSoloItems(contextual);
 
-  // 식당 자체가 거의 없는 지역에서만 원본 후보를 유지하되 혼밥형 매장을 최우선으로 정렬한다.
+  // 3순위: 카테고리·날씨 등 의미 있는 키워드 검색 결과만 사용한다.
+  const nonBroad = strict.filter((item) => tagsOf(item).some((tag) => !String(tag).startsWith('broad:')));
+  if (nonBroad.length >= 3) return rankSoloItems(nonBroad);
+
+  // 정말 식당이 드문 지역에서만 넓은 검색 결과를 단계적으로 허용한다.
+  if (strict.length >= 3) return rankSoloItems(strict);
+  if (withoutHard.length >= 2) return rankSoloItems(withoutHard);
   return rankSoloItems(items);
 }
 
