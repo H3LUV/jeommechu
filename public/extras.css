@@ -1,0 +1,70 @@
+.weather-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 13px;
+  padding: 15px 17px;
+  border-radius: 18px;
+  border: 1px solid #dbe8ff;
+  background: linear-gradient(145deg, #f5f9ff, #eef6ff);
+}
+.weather-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 15px;
+  background: white;
+  font-size: 25px;
+  box-shadow: 0 7px 18px rgba(54, 96, 160, .12);
+}
+.weather-card strong { display: block; font-size: 14px; }
+.weather-card span:not(.weather-icon) { display: block; margin-top: 4px; color: #68758a; font-size: 11px; line-height: 1.4; }
+
+.team-mode-grid { margin-top: 0; }
+.team-code-input { text-align: center; font-size: 25px; font-weight: 900; letter-spacing: 8px; }
+.share-link {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  margin: -3px 0 13px;
+  padding: 10px 10px 10px 13px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: white;
+}
+.share-link span { overflow: hidden; color: var(--muted); font-size: 11px; white-space: nowrap; text-overflow: ellipsis; }
+.share-link button {
+  border: 0;
+  border-radius: 10px;
+  background: var(--orange-soft);
+  color: var(--orange-dark);
+  padding: 8px 11px;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.deadline { color: var(--orange); font-variant-numeric: tabular-nums; }
+.form-card > .primary-button { margin-top: 22px; }
+.leave-room-button { width: 100%; margin-top: 10px; color: var(--muted); }
+
+.decision-panel {
+  margin-top: 15px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: #202124;
+  color: white;
+}
+.decision-panel > strong { display: block; font-size: 16px; }
+.decision-panel > span { display: block; margin: 5px 0 14px; color: rgba(255,255,255,.62); font-size: 11px; }
+.decision-panel .secondary-button { background: white; color: #202124; }
+.decision-panel .primary-button { box-shadow: none; }
+.eat-button.is-voted { background: #eaf0ff; color: var(--blue); }
+.winner-map { min-height: 52px; margin-bottom: 13px; }
+
+@media (max-width: 380px) {
+  .room-code-box strong { font-size: 24px; }
+  .button-row { grid-template-columns: 1fr; }
+}

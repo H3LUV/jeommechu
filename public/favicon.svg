@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="점메추 아이콘">
+  <defs>
+    <linearGradient id="bg" x1="18" y1="8" x2="108" y2="122" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffbd2e"/>
+      <stop offset="0.48" stop-color="#ff7a22"/>
+      <stop offset="1" stop-color="#f24725"/>
+    </linearGradient>
+    <linearGradient id="pin" x1="64" y1="19" x2="64" y2="73" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#37dbc5"/>
+      <stop offset="1" stop-color="#12a995"/>
+    </linearGradient>
+    <linearGradient id="bowl" x1="64" y1="67" x2="64" y2="111" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#fff0df"/>
+    </linearGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#8d2418" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <rect x="3" y="3" width="122" height="122" rx="30" fill="url(#bg)"/>
+  <path d="M95 18l2.6 6.2L104 27l-6.4 2.8L95 36l-2.6-6.2L86 27l6.4-2.8L95 18z" fill="#fff8c5"/>
+  <path d="M108 39l1.6 3.8 3.9 1.7-3.9 1.7L108 50l-1.6-3.8-3.9-1.7 3.9-1.7L108 39z" fill="#fff8c5"/>
+
+  <g filter="url(#shadow)">
+    <path d="M64 18c-14.2 0-25.8 11.2-25.8 25 0 18.5 25.8 37.2 25.8 37.2S89.8 61.5 89.8 43C89.8 29.2 78.2 18 64 18z" fill="url(#pin)" stroke="#fff" stroke-width="3"/>
+    <circle cx="64" cy="42" r="10.5" fill="#eefdf9"/>
+  </g>
+
+  <g fill="#fff9ef" stroke="#f6e3cf" stroke-width="1.4" filter="url(#shadow)">
+    <path d="M24 52c-5.2 0-8.7 4.6-8.7 11.3 0 5.8 2.7 10.3 6.3 11.6v30.8c0 3.2 1 5.3 2.4 5.3s2.4-2.1 2.4-5.3V74.9c3.6-1.3 6.3-5.8 6.3-11.6C32.7 56.6 29.2 52 24 52z"/>
+    <path d="M103 52v18.5h-3.2V52h-2.7v18.5H94V52h-2.7v22c0 4.2 2.7 7.3 5.8 8v23.8c0 3.2 1 5.3 2.4 5.3s2.4-2.1 2.4-5.3V82c3.1-.7 5.8-3.8 5.8-8V52H103z"/>
+  </g>
+
+  <g filter="url(#shadow)">
+    <ellipse cx="64" cy="74" rx="31" ry="13" fill="#fffaf2" stroke="#f4d8c0" stroke-width="2"/>
+    <path d="M35 73h58c-1.5 22.8-11.7 37-29 37S36.5 95.8 35 73z" fill="url(#bowl)" stroke="#f4d8c0" stroke-width="2"/>
+
+    <ellipse cx="64" cy="72" rx="27.5" ry="9.5" fill="#ffe6b3"/>
+    <circle cx="47" cy="69" r="7" fill="#ef4c27"/>
+    <circle cx="55" cy="66" r="6" fill="#ff7c24"/>
+    <circle cx="75" cy="67" r="7" fill="#ffca31"/>
+    <circle cx="82" cy="70" r="5.5" fill="#ef4c27"/>
+    <path d="M58 72c4-12 11-14 16-7-4 2-7 5-9 10z" fill="#3bad50"/>
+    <path d="M43 72c4-10 9-12 14-6-4 2-7 5-8 9z" fill="#55c95a"/>
+    <path d="M69 72c4-9 9-10 13-4-3 1-6 4-7 7z" fill="#2f9f43"/>
+    <g fill="#f7f2d5">
+      <ellipse cx="60" cy="68" rx="2.2" ry="1.3"/>
+      <ellipse cx="67" cy="65" rx="2.2" ry="1.3"/>
+      <ellipse cx="72" cy="71" rx="2.2" ry="1.3"/>
+      <ellipse cx="52" cy="73" rx="2.2" ry="1.3"/>
+    </g>
+
+    <circle cx="53" cy="90" r="2.4" fill="#49302a"/>
+    <circle cx="75" cy="90" r="2.4" fill="#49302a"/>
+    <path d="M59 97c3.2 2.8 6.8 2.8 10 0" fill="none" stroke="#49302a" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="46" cy="96" r="3" fill="#ff8f86" opacity="0.8"/>
+    <circle cx="82" cy="96" r="3" fill="#ff8f86" opacity="0.8"/>
+  </g>
+
+  <path d="M36 24l1.8 4.2L42 30l-4.2 1.8L36 36l-1.8-4.2L30 30l4.2-1.8L36 24z" fill="#fff8c5"/>
+</svg>
