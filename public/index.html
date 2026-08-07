@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#ff5b36" />
-  <meta name="description" content="현재 위치 반경 1km에서 오늘의 점심 식당을 추천하는 서비스" />
-  <title>점메추 — 오늘 점심, 30초 만에 결정</title>
+  <meta name="description" content="현재 위치 반경 1km에서 오늘의 점심 식당을 추천하는 H3 WORKS의 점심 메뉴 추천 서비스" />
+  <meta name="author" content="H3 WORKS" />
+  <title>점메추 by H3 WORKS — 오늘 점심, 30초 만에 결정</title>
   <link rel="icon" href="./favicon.svg?v=0.6.7" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="./favicon.svg?v=0.6.7" />
   <link rel="manifest" href="./manifest.webmanifest" />
@@ -15,6 +16,7 @@
   <link rel="stylesheet" href="./styles.css?v=0.6.7" />
   <link rel="stylesheet" href="./extras.css?v=0.6.7" />
   <link rel="stylesheet" href="./brand-icon.css?v=0.6.7" />
+  <link rel="stylesheet" href="./h3works-brand.css?v=0.6.8" />
   <script type="importmap">
     {"imports":{"./team-final.js?v=3":"./team-ui-v2.js?v=0.6.7"}}
   </script>
@@ -24,7 +26,19 @@
     <header class="topbar">
       <button class="brand" type="button" data-action="home" aria-label="점메추 홈">
         <span class="brand-mark brand-mark--image" aria-hidden="true"><img src="./favicon.svg?v=0.6.7" alt="" /></span>
-        <span class="brand-copy"><strong>점메추</strong><small>점심 결정 구조대</small></span>
+        <span class="brand-copy">
+          <strong>점메추</strong>
+          <small>점심 결정 구조대</small>
+          <span class="h3-credit" aria-label="H3 WORKS에서 제작">
+            <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M5 29.5 66 6 43 66 33.5 39.5 5 29.5Z" fill="#FFB514"/>
+              <path d="M5 29.5 66 6 26.5 35.7 5 29.5Z" fill="#FFD35A"/>
+              <path d="M33.5 39.5 66 6 27 49.5 17 62 31 53.5 33.5 39.5Z" fill="#F59E0B"/>
+              <path d="M33.5 39.5 66 6 39.2 44.2 33.5 39.5Z" fill="#FFF4C2"/>
+            </svg>
+            <span>by <b>H3 WORKS</b></span>
+          </span>
+        </span>
       </button>
       <button class="history-button" type="button" data-action="history" aria-label="식사 기록 보기"><span aria-hidden="true">◷</span><span>기록</span></button>
     </header>
