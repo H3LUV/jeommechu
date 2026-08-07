@@ -1,11 +1,6 @@
 name: Import Jeommechu from legacy repository
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - '.github/workflows/import-source.yml'
   pull_request:
     branches:
       - main
@@ -30,7 +25,7 @@ jobs:
           ref: jeommechu-cloudflare
           path: _legacy
 
-      - name: Import project
+      - name: Import project files
         shell: bash
         run: |
           set -euo pipefail
@@ -38,48 +33,7 @@ jobs:
           cp -a _legacy/jeommechu/. ./
           rm -rf android
           cp -a _legacy/android ./android
-
-          mkdir -p .github/workflows
-          cp _legacy/.github/workflows/build-jeommechu-apk.yml .github/workflows/build-jeommechu-apk.yml
-
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('.github/workflows/build-jeommechu-apk.yml')
-          text = p.read_text(encoding='utf-8')
-          text = text.replace('jeommechu-cloudflare', 'main')
-          p.write_text(text, encoding='utf-8')
-          PY
-
-          cat > .github/workflows/ci.yml <<'YAML'
-          name: Jeommechu CI
-
-          on:
-            pull_request:
-              branches: [main]
-            push:
-              branches: [main]
-              paths:
-                - 'src/**'
-                - 'public/**'
-                - 'package.json'
-                - 'wrangler.jsonc'
-                - '.github/workflows/ci.yml'
-
-          permissions:
-            contents: read
-
-          jobs:
-            check:
-              runs-on: ubuntu-latest
-              steps:
-                - uses: actions/checkout@v4
-                - uses: actions/setup-node@v4
-                  with:
-                    node-version: '22'
-                    cache: npm
-                - run: npm install
-                - run: npm run check
-          YAML
+          rm -rf _legacy
 
           cat > README.md <<'MD'
           # 점메추
@@ -105,19 +59,16 @@ jobs:
           배포 시 Cloudflare Worker에 `KAKAO_REST_API_KEY` secret이 필요합니다.
           MD
 
-          rm -rf _legacy
-          rm -f .github/workflows/import-source.yml
-
       - name: Commit imported project
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
+          git add -A -- ':!.github/workflows'
           if git diff --cached --quiet; then
-            echo 'No changes to commit.'
+            echo 'No project changes to commit.'
             exit 0
           fi
-          git commit -m 'Import Jeommechu from legacy repository'
+          git commit -m 'Import Jeommechu project files from legacy repository'
           git push origin HEAD:main
