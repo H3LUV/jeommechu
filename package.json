@@ -1,0 +1,14 @@
+{
+  "name": "jeommechu-cloudflare-workers",
+  "version": "0.6.5",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check src/main.js && node --check src/index.js && node --check src/recommendations.js && node --check src/recommendations-v2.js && node --check src/team-room.js && node --check src/team-room-v2.js && node --check public/app.js && node --check public/reroll.js && node --check public/kakao-map.js && node --check public/ui-copy.js && node --check public/team.js && node --check public/team-fixed.js && node --check public/team-final.js && node --check public/team-ui-v2.js",
+    "dev": "wrangler dev",
+    "deploy": "npm run check && wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
