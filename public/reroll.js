@@ -13,7 +13,10 @@
     return [...items]
       .map((item) => ({
         item,
-        rank: Math.random() * 12 + Number(item.score || 0) / 18,
+        rank:
+          Number(item.score || 0) * 1.2
+          + Number(item.contextScore || 0) * 0.8
+          + Math.random() * 8,
       }))
       .sort((a, b) => b.rank - a.rank)
       .map(({ item }) => item);

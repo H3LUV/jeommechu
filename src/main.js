@@ -34,6 +34,7 @@ async function handleRestaurants(request, env) {
       locationText: body.locationText || '',
       categories: Array.isArray(body.categories) ? body.categories : [],
       hangoverStrength: body.hangover ? 1 : 0,
+      companion: body.companion || '동료',
       limit: 30,
     });
 
