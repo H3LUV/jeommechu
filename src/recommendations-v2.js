@@ -15,6 +15,49 @@ const WET_TERMS = ['국밥', '찌개', '전골', '칼국수', '우동'];
 const COLD_TERMS = ['국밥', '찌개', '전골', '라멘', '칼국수'];
 const HOT_TERMS = ['냉면', '막국수', '소바', '샐러드', '쌀국수'];
 
+const DINING_CONTEXTS = {
+  혼밥: {
+    label: '혼밥 맞춤',
+    queryTerms: ['김밥', '국밥', '우동', '짜장면', '돈까스', '햄버거'],
+    positiveTerms: [
+      '김밥', '분식', '떡볶이', '라면', '라멘', '우동', '소바', '짜장면', '짬뽕', '국밥', '순대국',
+      '해장국', '백반', '덮밥', '돈까스', '돈카츠', '햄버거', '버거', '샌드위치', '쌀국수', '칼국수',
+      '제육', '도시락', '죽', '설렁탕', '곰탕', '냉면', '기사식당', '식당',
+    ],
+    negativeTerms: ['한정식', '오마카세', '파인다이닝', '파인 다이닝', '코스요리', '코스 요리', '스테이크하우스', '라운지', '뷔페'],
+    hardExcludeTerms: ['호텔', '백화점', '리조트', '웨딩', '컨벤션', '오마카세', '파인다이닝', '파인 다이닝'],
+    positiveWeight: 26,
+    negativeWeight: 28,
+  },
+  동료: {
+    label: '동료 식사 맞춤',
+    queryTerms: ['백반', '찌개', '돈까스', '파스타', '중식', '국밥'],
+    positiveTerms: [
+      '백반', '찌개', '국밥', '돈까스', '돈카츠', '제육', '보쌈', '쌈밥', '닭갈비', '샤브샤브',
+      '파스타', '중식', '일식', '초밥', '쌀국수', '칼국수', '냉면', '불고기', '갈비', '전골',
+    ],
+    negativeTerms: ['오마카세', '파인다이닝', '파인 다이닝', '코스요리', '코스 요리', '라운지'],
+    hardExcludeTerms: ['호텔', '백화점', '리조트', '웨딩', '컨벤션', '파인다이닝', '파인 다이닝'],
+    positiveWeight: 14,
+    negativeWeight: 24,
+  },
+  비즈니스: {
+    label: '비즈니스 식사 맞춤',
+    queryTerms: ['한정식', '일식', '중식', '정식', '갈비', '스시'],
+    positiveTerms: [
+      '한정식', '정식', '일식', '중식', '스시', '초밥', '코스', '다이닝', '갈비', '불고기', '장어',
+      '샤브샤브', '전골', '스테이크', '오마카세', '룸', '참치', '복어', '중화요리', '요리',
+    ],
+    negativeTerms: [
+      '김밥', '분식', '떡볶이', '라면', '햄버거', '버거', '핫도그', '토스트', '도시락', '푸드코트',
+      '편의점', '기사식당',
+    ],
+    hardExcludeTerms: [],
+    positiveWeight: 24,
+    negativeWeight: 34,
+  },
+};
+
 function normalizeCategory(raw = '') {
   if (raw.includes('한식')) return '한식';
   if (raw.includes('중식') || raw.includes('중국')) return '중식';
@@ -22,6 +65,18 @@ function normalizeCategory(raw = '') {
   if (raw.includes('양식') || raw.includes('이탈리안') || raw.includes('패밀리레스토랑')) return '양식';
   if (raw.includes('분식')) return '분식';
   return '기타';
+}
+
+function normalizeDiningContext(value = '') {
+  return Object.prototype.hasOwnProperty.call(DINING_CONTEXTS, value) ? value : '동료';
+}
+
+function itemText(item) {
+  return `${item.name || ''} ${item.categoryRaw || ''} ${item.address || ''}`.toLowerCase();
+}
+
+function includesAny(text, terms = []) {
+  return terms.some((term) => text.includes(term.toLowerCase()));
 }
 
 async function kakaoJson(url, key) {
@@ -142,7 +197,34 @@ function placeToItem(place) {
   };
 }
 
-function scoreItem(item, categories, signals) {
+function scoreDiningContext(item, diningContext) {
+  const context = DINING_CONTEXTS[diningContext];
+  const text = itemText(item);
+  let delta = 0;
+  const reasons = [];
+
+  if (includesAny(text, context.positiveTerms)) {
+    delta += context.positiveWeight;
+    reasons.push(context.label);
+  }
+  if (includesAny(text, context.negativeTerms)) {
+    delta -= context.negativeWeight;
+  }
+
+  if (diningContext === '혼밥') {
+    if (item.category === '분식') delta += 10;
+    if (item.distance_m <= 500) delta += 6;
+  } else if (diningContext === '동료') {
+    if (['한식', '중식', '일식', '양식'].includes(item.category)) delta += 4;
+  } else if (diningContext === '비즈니스') {
+    if (['한식', '중식', '일식', '양식'].includes(item.category)) delta += 7;
+    if (text.includes('호텔')) delta += 6;
+  }
+
+  return { delta, reasons };
+}
+
+function scoreItem(item, categories, signals, diningContext) {
   let score = 25;
   const reasons = [];
   const text = `${item.name} ${item.categoryRaw} ${item.address}`;
@@ -166,9 +248,15 @@ function scoreItem(item, categories, signals) {
     }
   }
 
+  const contextScore = scoreDiningContext(item, diningContext);
+  score += contextScore.delta;
+  reasons.push(...contextScore.reasons);
+
   return {
     ...item,
-    score: Math.round(Math.min(99, score)),
+    score: Math.round(Math.max(1, Math.min(99, score))),
+    diningContext,
+    contextScore: contextScore.delta,
     reasons: [...new Set(reasons)].slice(0, 3),
   };
 }
@@ -247,16 +335,27 @@ async function settleSearches(requests) {
   return { documents, firstError };
 }
 
+function applyContextHardFilter(items, diningContext) {
+  const context = DINING_CONTEXTS[diningContext];
+  if (!context.hardExcludeTerms.length) return items;
+
+  const preferred = items.filter((item) => !includesAny(itemText(item), context.hardExcludeTerms));
+  return preferred.length >= 5 ? preferred : items;
+}
+
 export async function findRestaurants({
   key,
   coords,
   locationText = '',
   categories = [],
   hangoverStrength = 0,
+  companion = '동료',
   limit = 5,
 }) {
   if (!key) throw new Error('KAKAO_REST_API_KEY가 등록되지 않았습니다.');
 
+  const diningContext = normalizeDiningContext(companion);
+  const context = DINING_CONTEXTS[diningContext];
   const center = await resolveCenter(coords, locationText, key);
   const selectedCategories = categories.length
     ? categories
@@ -271,13 +370,14 @@ export async function findRestaurants({
   ];
 
   const keywords = [
-    ...selectedCategories.slice(0, 3).flatMap((category) => CATEGORY_TERMS[category] || []),
-    ...signals.queryTerms.slice(0, 3),
+    ...context.queryTerms.slice(0, 6),
+    ...selectedCategories.slice(0, 3).flatMap((category) => CATEGORY_TERMS[category]?.slice(0, 2) || []),
+    ...signals.queryTerms.slice(0, 2),
     '음식점',
     '점심',
   ].filter(Boolean);
 
-  for (const keyword of [...new Set(keywords)].slice(0, 10)) {
+  for (const keyword of [...new Set(keywords)].slice(0, 12)) {
     requests.push(keywordSearch(center, keyword, key));
   }
 
@@ -289,11 +389,12 @@ export async function findRestaurants({
   const scored = uniquePlaces(searched.documents)
     .map(placeToItem)
     .filter((item) => Number.isFinite(item.distance_m) && item.distance_m <= SEARCH_RADIUS_M)
-    .map((item) => scoreItem(item, selectedCategories, signals))
-    .sort((a, b) => b.score - a.score || a.distance_m - b.distance_m);
+    .map((item) => scoreItem(item, selectedCategories, signals, diningContext))
+    .sort((a, b) => b.score - a.score || b.contextScore - a.contextScore || a.distance_m - b.distance_m);
 
-  const matching = scored.filter((item) => selectedCategories.includes(item.category));
-  const alternatives = scored.filter((item) => !selectedCategories.includes(item.category));
+  const contextFiltered = applyContextHardFilter(scored, diningContext);
+  const matching = contextFiltered.filter((item) => selectedCategories.includes(item.category));
+  const alternatives = contextFiltered.filter((item) => !selectedCategories.includes(item.category));
   const ordered = [...matching, ...alternatives];
   const safeLimit = Math.min(MAX_POOL_SIZE, Math.max(1, Number(limit || 5)));
   const items = ordered.slice(0, safeLimit);
@@ -303,8 +404,9 @@ export async function findRestaurants({
   return {
     items,
     weather,
-    appliedSignals: signals.labels,
+    appliedSignals: [...signals.labels, context.label],
     source: center.source,
+    diningContext,
     searchRadiusM: SEARCH_RADIUS_M,
     poolSize: items.length,
   };
