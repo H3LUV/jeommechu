@@ -129,13 +129,24 @@ async function locate() {
 }
 
 async function recommend() {
-  state.previousMenu = $('#previous-menu')?.value.trim() || '';
-  const typedLocation = $('#location-text')?.value.trim() || '';
-  if (typedLocation && typedLocation !== '현재 위치') {
-    state.coords = null;
-    state.weather = null;
+  const previousMenuInput = $('#previous-menu');
+  const locationInput = $('#location-text');
+
+  // 조건 입력 화면에서 새 검색을 시작할 때만 입력값을 state에 반영한다.
+  // 결과 화면의 '다시 추천'에는 입력 필드가 없으므로 기존 검색 위치/제외 메뉴를 그대로 유지한다.
+  if (previousMenuInput) state.previousMenu = previousMenuInput.value.trim();
+
+  if (locationInput) {
+    const typedLocation = locationInput.value.trim();
+    if (typedLocation && typedLocation !== '현재 위치') {
+      state.coords = null;
+      state.weather = null;
+    }
+    state.locationText = typedLocation || (state.coords ? '현재 위치' : state.locationText || '서울 광화문');
+  } else if (!state.locationText) {
+    state.locationText = state.coords ? '현재 위치' : '서울 광화문';
   }
-  state.locationText = typedLocation || (state.coords ? '현재 위치' : '서울 광화문');
+
   if (!state.categories.length) return showToast('카테고리를 하나 이상 선택해 주세요.');
 
   state.loading = true;
