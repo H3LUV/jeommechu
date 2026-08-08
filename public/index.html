@@ -16,12 +16,12 @@
   <link rel="stylesheet" href="./styles.css?v=0.6.7" />
   <link rel="stylesheet" href="./extras.css?v=0.6.7" />
   <link rel="stylesheet" href="./brand-icon.css?v=0.6.7" />
-  <link rel="stylesheet" href="./h3works-brand.css?v=0.6.9" />
+  <link rel="stylesheet" href="./h3works-brand.css?v=0.6.10" />
   <script type="importmap">
     {"imports":{"./team-final.js?v=3":"./team-ui-v2.js?v=0.6.7"}}
   </script>
 </head>
-<body>
+<body class="h3-intro-running">
   <div class="h3-launch-splash" id="h3LaunchSplash" aria-hidden="true">
     <div class="h3-launch-inner">
       <div class="h3-launch-mark">
@@ -45,15 +45,6 @@
         <span class="brand-copy">
           <strong>점메추</strong>
           <small>점심 결정 구조대</small>
-          <span class="h3-credit" aria-label="H3 WORKS에서 제작">
-            <svg viewBox="0 0 72 72" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M5 29.5 66 6 43 66 33.5 39.5 5 29.5Z" fill="#FFB514"/>
-              <path d="M5 29.5 66 6 26.5 35.7 5 29.5Z" fill="#FFD35A"/>
-              <path d="M33.5 39.5 66 6 27 49.5 17 62 31 53.5 33.5 39.5Z" fill="#F59E0B"/>
-              <path d="M33.5 39.5 66 6 39.2 44.2 33.5 39.5Z" fill="#FFF4C2"/>
-            </svg>
-            <span>by <b>H3 WORKS</b></span>
-          </span>
         </span>
       </button>
       <button class="history-button" type="button" data-action="history" aria-label="식사 기록 보기"><span aria-hidden="true">◷</span><span>기록</span></button>
@@ -72,10 +63,18 @@
   <script>
     (() => {
       const splash = document.getElementById('h3LaunchSplash');
-      if (!splash) return;
+      if (!splash) {
+        document.body.classList.remove('h3-intro-running');
+        return;
+      }
       const leave = () => {
         splash.classList.add('is-leaving');
-        window.setTimeout(() => splash.remove(), 620);
+        document.body.classList.remove('h3-intro-running');
+        document.body.classList.add('h3-intro-reveal');
+        window.setTimeout(() => {
+          splash.remove();
+          document.body.classList.remove('h3-intro-reveal');
+        }, 620);
       };
       window.setTimeout(leave, 1450);
     })();
